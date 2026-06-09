@@ -13,7 +13,7 @@ use core::mem;
 use network_types::{
     arp::ArpHdr,
     eth::{EthHdr, EtherType},
-    icmp::{Icmp, IcmpHdr, IcmpV6Hdr},
+    icmp::{Icmp, Icmpv4Hdr, Icmpv6Hdr},
     igmp::{IGMPv1Hdr, IGMPv2Hdr, IGMPv3MembershipQueryHdr, IGMPv3MembershipReportHdr},
     ip::{IpHdr, IpProto, Ipv4Hdr, Ipv6Hdr},
     sctp::SctpHdr,
@@ -172,7 +172,7 @@ fn process(ctx: TcContext) -> Result<i32, ()> {
         }
     };
 
-    let ether_type = EtherType::try_from(unsafe { (*eth_header).ether_type }).map_err(|_| ())?;
+    let ether_type = unsafe { (*eth_header).ether_type() }.map_err(|_| ())?;
 
     match ether_type {
         EtherType::Ipv4 => {
@@ -186,7 +186,7 @@ fn process(ctx: TcContext) -> Result<i32, ()> {
                 }
             };
 
-            match unsafe { (*ipv4_header).proto } {
+            match unsafe { (*ipv4_header).proto() }.map_err(|_| ())? {
                 IpProto::Tcp => {
                     let tcp_header: *const TcpHdr = ptr_at(&ctx, EthHdr::LEN + Ipv4Hdr::LEN)?;
 
@@ -290,7 +290,7 @@ fn process(ctx: TcContext) -> Result<i32, ()> {
                     if filter_packet(Protocol::Network(NetworkProtocol::Icmpv4)) {
                         return Ok(TC_ACT_PIPE);
                     }
-                    let icmp_header: *const IcmpHdr = ptr_at(&ctx, EthHdr::LEN + Ipv4Hdr::LEN)?;
+                    let icmp_header: *const Icmpv4Hdr = ptr_at(&ctx, EthHdr::LEN + Ipv4Hdr::LEN)?;
 
                     unsafe {
                         submit(RawData {
@@ -453,7 +453,7 @@ fn process(ctx: TcContext) -> Result<i32, ()> {
                 }
             };
 
-            match unsafe { (*ipv6_header).next_hdr } {
+            match unsafe { (*ipv6_header).next_hdr() }.map_err(|_| ())? {
                 IpProto::Tcp => {
                     let tcp_header: *const TcpHdr = ptr_at(&ctx, EthHdr::LEN + Ipv6Hdr::LEN)?;
 
@@ -561,7 +561,7 @@ fn process(ctx: TcContext) -> Result<i32, ()> {
                     if filter_packet(Protocol::Network(NetworkProtocol::Icmpv6)) {
                         return Ok(TC_ACT_PIPE);
                     }
-                    let icmp_header: *const IcmpV6Hdr = ptr_at(&ctx, EthHdr::LEN + Ipv6Hdr::LEN)?;
+                    let icmp_header: *const Icmpv6Hdr = ptr_at(&ctx, EthHdr::LEN + Ipv6Hdr::LEN)?;
 
                     unsafe {
                         submit(RawData {

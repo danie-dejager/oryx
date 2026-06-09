@@ -22,7 +22,7 @@ impl From<EthHdr> for EthFrameHeader {
         Self {
             src: MacAddr(value.src_addr),
             dst: MacAddr(value.dst_addr),
-            ether_type: EtherType::try_from(value.ether_type).unwrap(),
+            ether_type: value.ether_type().unwrap(),
         }
     }
 }

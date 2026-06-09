@@ -96,11 +96,11 @@ pub fn handle_key_events(
                         app.is_editing = false;
                     }
                 }
-                ActivePopup::NewMetricExplorer => {
-                    if app.section.metrics.handle_popup_keys(key_event).is_ok() {
-                        app.active_popup = None;
-                        app.is_editing = false;
-                    }
+                ActivePopup::NewMetricExplorer
+                    if app.section.metrics.handle_popup_keys(key_event).is_ok() =>
+                {
+                    app.active_popup = None;
+                    app.is_editing = false;
                 }
                 _ => {}
             },

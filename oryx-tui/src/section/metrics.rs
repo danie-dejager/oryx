@@ -345,10 +345,11 @@ impl Metrics {
                                                         metric.tcp_count += 1;
                                                     }
                                                 }
-                                                IpProto::Udp(udp_packet) => {
-                                                    if port_range.contains(&udp_packet.dst_port) {
-                                                        metric.udp_count += 1;
-                                                    }
+                                                IpProto::Udp(udp_packet)
+                                                    if port_range
+                                                        .contains(&udp_packet.dst_port) =>
+                                                {
+                                                    metric.udp_count += 1;
                                                 }
                                                 _ => {}
                                             },
@@ -358,10 +359,11 @@ impl Metrics {
                                                         metric.tcp_count += 1;
                                                     }
                                                 }
-                                                IpProto::Udp(udp_packet) => {
-                                                    if port_range.contains(&udp_packet.dst_port) {
-                                                        metric.udp_count += 1;
-                                                    }
+                                                IpProto::Udp(udp_packet)
+                                                    if port_range
+                                                        .contains(&udp_packet.dst_port) =>
+                                                {
+                                                    metric.udp_count += 1;
                                                 }
                                                 _ => {}
                                             },
